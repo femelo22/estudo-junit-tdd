@@ -6,6 +6,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -15,7 +17,12 @@ import exceptions.OperacaoBancariaException;
 
 public class BancoTest {
 	
+	private OperacoesService service;
 	
+	@Before
+	public void setup() {
+		service = new OperacoesService();
+	}
 	
 	
 	@Rule
@@ -25,9 +32,7 @@ public class BancoTest {
 	public void test_DeveRealizarDeposito() {
 		Cliente c1 = umCliente().agora();
 		
-		OperacoesService pgtoService = new OperacoesService();
-		
-		Double saldoAtualizado = pgtoService.depositar(c1, 100.0);
+		Double saldoAtualizado = service.depositar(c1, 100.0);
 		
 		assertThat(saldoAtualizado, is(1100.0));
 	}
@@ -36,9 +41,7 @@ public class BancoTest {
 	public void test_DeveRealizarSaque() throws OperacaoBancariaException {
 		Cliente cliente = umCliente().agora();
 		
-		OperacoesService pgtoService = new OperacoesService();
-		
-		Double saldoAtualizado = pgtoService.sacar(cliente, 100.0);
+		Double saldoAtualizado = service.sacar(cliente, 100.0);
 		
 		assertThat(saldoAtualizado, CoreMatchers.is(900.0));
 	}
@@ -47,12 +50,11 @@ public class BancoTest {
 	@Test
 	public void test_RealizarSaqueSemSaldo() throws OperacaoBancariaException {
 		Cliente cliente = umClienteSemSaldo().agora();
-		OperacoesService pgtoService = new OperacoesService();
 		
 		exception.expect(OperacaoBancariaException.class);
 		exception.expectMessage("Saldo insuficiente");
 		
-		pgtoService.sacar(cliente, 2000.0);
+		service.sacar(cliente, 2000.0);
 	}
 	
 	
